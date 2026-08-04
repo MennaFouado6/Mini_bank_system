@@ -8,26 +8,32 @@ class Account:
     self.name = name
     self.pin = pin
     self.balance = balance
+    self.transactions = [] 
 
   def __repr__(self):
     return f"Account ({self.account_number}, {self.name}, Balance: {self.balance})"
+  
   #nhwel el acc fe dictionary aashan neaarf n7fzo fel malaf
   def to_dict(self):
     return{
         "account_number": self.account_number,
         "name": self.name,
         "pin": self.pin,
-        "balance": self.balance
+        "balance": self.balance,
+        "transactions" : self.transactions,
     }
+  
   #nrg3 el hesab mn el dictionary
   @classmethod
   def from_dict(cls,data):
-    return cls(
+    account = cls(
         account_number = int(data["account_number"]),
         name = data["name"],
         pin = data["pin"],
         balance = float(data.get("balance",0)),
     )
+    account.transactions = data.get("transactions" ,[])
+    return account
 
 #Account Manager
 class Account_Manager:
@@ -266,39 +272,3 @@ class Account_Manager:
       print(f"Name: {account.name}")
       print(f"Balance: {account.balance}")
       print("-------------------------")
-
-def main():
-  manager = Account_Manager()
-
-  while True:
-    print("\n**************Welcome to our bank**************")
-    print("1. Create New Account")
-    print("2. Delete Account")
-    print("3. View Account Details")
-    print("4. Search Account by Name")
-    print("5. Exit")
-
-    choice = input("Choose an operation (1-5): ").strip()
-
-    if choice == "1":
-      manager.create_account_interactive()
-
-    elif choice == "2":
-      manager.delete_account_interactive()
-
-    elif choice == "3":
-      manager.view_account_details_interactive()
-
-    elif choice == "4":
-      manager.search_account_by_name_interactive()
-
-    elif choice == "5":
-      print("Goodbye!")
-      break
-
-    else:
-      print("Invalid choice. Please choose a number from 1 to 5.")
-
-
-if __name__ == "__main__":
-  main()
