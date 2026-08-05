@@ -98,7 +98,7 @@ def main():
 
 
         elif choice == "9":
-            auth.login()                         
+            logged_in_account = auth.login()                         
 
  
         elif choice == "10":

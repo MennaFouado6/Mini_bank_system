@@ -43,7 +43,7 @@ class Auth_Reporting:
         return
 
       new_pin = None
-      for attempts in range(3):
+      for attempts in range(1,4):
         input_pin = input("Please enter your new pin: ")
         if len(input_pin) == 4 and input_pin.isdigit():
           new_pin = input_pin
@@ -51,9 +51,12 @@ class Auth_Reporting:
   
         remaining_attempts = 3 - attempts
         print(f"Pin must be in four digits only! You have {remaining_attempts} attempt")
-        if remaining_attempts == 0:
-          print("You failed to enter a valid PIN after 3 tries. Operation cancelled.")
+        if remaining_attempts > 0:
+          print(f"Invalid PIN. You have {remaining_attempts} tries left.")
+        else:
+          print("Failed after 3 tries, Operation cancelled")
           return
+
       try:
         account.pin = new_pin
         print("Pin successfully changed")
