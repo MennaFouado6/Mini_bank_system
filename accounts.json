@@ -3,6 +3,13 @@
     "account_number": 1001,
     "name": "Shahd",
     "pin": "2007",
-    "balance": 50000.0
+    "balance": 50500.0,
+    "transactions": [
+      {
+        "type": "deposit",
+        "amount": 500.0,
+        "balance_after": 50500.0
+      }
+    ]
   }
 ]
