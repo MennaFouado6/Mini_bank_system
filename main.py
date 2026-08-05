@@ -1,5 +1,5 @@
 from account import Account_Manager
-from transactions import deposit, withdraw, transfer,check_balance
+from transactions import deposit, withdraw, transfer, check_balance
 from Auth_Reporting import Auth_Reporting
 
 def get_int(prompt):
@@ -8,119 +8,113 @@ def get_int(prompt):
             return int(input(prompt))
         except ValueError:
             print("Invalid input. Please enter digits only.")
-            
+
 def main():
     manager = Account_Manager()
     auth = Auth_Reporting(manager)
+    logged_in_account = None
 
     while True:
-        print("\n**************Welcome to our bank**************")
-        print("1. Create New Account")
-        print("2. Deleter Account")
-        print("3. View Account Details")
-        print("4. Search Account by Name")
-        print("5. Deposit")
-        print("6. Withdraw")
-        print("7. Transfer")
-        print("8. Check Balance")
-        print("9. Login")
-        print("10. Change PIN")
-        print("11. Transaction History")
-        print("12. List All Accounts")
-        print("13. Exit")
-
-        choice = input("Choose an operation (1-13): ").strip()
-
-        if choice == "1":
-            manager.create_account_interactive()
-
-        elif choice == "2":
-            manager.delete_account_interactive()
-
-        elif choice == "3":
-            manager.view_account_details_interactive()
-
-        elif choice == "4":
-            manager.search_account_by_name_interactive()
-
-        elif choice == "5":
-            account_number = int(input("Enter your account_number: "))
-            account = manager.get_account_by_account_number(account_number)
-            if account is None:
-                print(f"Account {account_number} does not exist.")
-            elif manager.verify_pin(account):
-                try:
-                    deposit(account)
-                    manager.save_accounts()
-                except ValueError as e:
-                    print(f"Error: {e}")
-
-
-        elif choice == "6":
-            account_number = int(input("Enter your account number: "))
-            account = manager.get_account_by_account_number(account_number)
-            if account is None:
-                print(f"Account {account_number} does not exist.")
-            elif manager.verify_pin(account):
-                try:
-                    withdraw(account)
-                    manager.save_accounts()
-                except ValueError as e:
-                    print(f"Error: {e}")
-
-
-        elif choice == "7":
-            sender_number = int(input("Enter your account number: "))
-            sender = manager.get_account_by_account_number(sender_number)
-            if sender is None:
-                print(f"Account {sender_number} does not exist")
-            elif manager.verify_pin(sender):
-                receiver_number = int(input("Enter recipient's account number: "))
-                receiver = manager.get_account_by_account_number(receiver_number)
-                if receiver is None:
-                    print(f"Account {receiver_number} does not exist.")
-
+        print("\n************** Welcome to our Bank **************")
+        
+        # --- PRE-LOGIN MENU ---
+        if logged_in_account is None:
+            print("1. Create New Account")
+            print("2. Login")
+            print("3. List All Accounts (Admin)")
+            print("4. Exit")
+            
+            choice = input("Choose an operation (1-4): ").strip()
+            
+            if choice == "1":
+                manager.create_account_interactive()
+            elif choice == "2":
+                logged_in_account = auth.login()
+                if logged_in_account:
+                    print(f"\n Welcome back, {logged_in_account.name}!")
                 else:
-                    try:
-                        transfer(sender,receiver)
-                        manager.save_accounts()
-                    except ValueError as e:
-                        print(f"Error: {e}")
+                    print("\n Login failed. Please try again.")
+            elif choice == "3":
+                auth.list_all_accounts()
+            elif choice == "4":
+                print("Goodbye!")
+                break
+            else:
+                print("Invalid choice. Please choose 1-4.")
 
-
-        elif choice == "8":
-            account_number = int(input("Enter your account number: "))
-            account = manager.get_account_by_account_number(account_number)
-            if account is None:
-                print(f"Account {account_number} does not exist.")
-            elif manager.verify_pin(account):
-                check_balance(account)
-
-
-        elif choice == "9":
-            logged_in_account = auth.login()                         
-
- 
-        elif choice == "10":
-            auth.change_pin()                     
-
- 
-        elif choice == "11":
-            account_number = int(input("Enter account number: "))
-            auth.transaction_history(account_number)  
-
- 
-        elif choice == "12":
-            auth.list_all_accounts()              
-
- 
-        elif choice == "13":
-            print("Goodbye!")
-            break
-
+        # after login menu
         else:
-            print("Invalide choice. Please choose a number from 1 to 13.")  
-
+            print(f"Logged in as: {logged_in_account.name} (Acc: {logged_in_account.account_number})")
+            print("1. Deposit")
+            print("2. Withdraw")
+            print("3. Transfer")
+            print("4. Check Balance")
+            print("5. View My Details")
+            print("6. Change PIN")
+            print("7. Transaction History")
+            print("8. Delete My Account")
+            print("9. Logout")
+            
+            choice = input("Choose an operation (1-9): ").strip()
+            
+            if choice == "1":
+                try:
+                    deposit(logged_in_account)
+                    manager.save_accounts()
+                except ValueError as e:
+                    print(f"Error: {e}")
+                    
+            elif choice == "2":
+                try:
+                    withdraw(logged_in_account)
+                    manager.save_accounts()
+                except ValueError as e:
+                    print(f"Error: {e}")
+                    
+            elif choice == "3":
+                receiver_num = get_int("Enter recipient's account number: ")
+                if receiver_num == logged_in_account.account_number:
+                    print("Cannot transfer to your own account.")
+                else:
+                    receiver = manager.get_account_by_account_number(receiver_num)
+                    if receiver is None:
+                        print(f"Account {receiver_num} does not exist.")
+                    else:
+                        try:
+                            transfer(logged_in_account, receiver)
+                            manager.save_accounts()
+                        except ValueError as e:
+                            print(f"Error: {e}")
+                            
+            elif choice == "4":
+                check_balance(logged_in_account)
+                
+            elif choice == "5":
+                manager.view_account_details(logged_in_account.account_number)
+                
+            elif choice == "6":
+                # Pass logged_in_account so it doesn't ask for PIN again
+                auth.change_pin(logged_in_account)
+                
+            elif choice == "7":
+                auth.transaction_history(logged_in_account.account_number)
+                
+            elif choice == "8":
+                confirm = input("Are you sure you want to DELETE your account? (yes/no): ").strip().lower()
+                if confirm == "yes":
+                    manager.delete_account(logged_in_account.account_number)
+                    manager.save_accounts()
+                    print("Account deleted successfully.")
+                    logged_in_account = None
+                else:
+                    print("Deletion cancelled.")
+                    
+            elif choice == "9":
+                print(f"Goodbye, {logged_in_account.name}!")
+                logged_in_account = None
+                
+            else:
+                print("Invalid choice. Please choose 1-9.")
 
 if __name__ == "__main__":
-    main()          
+    main()
