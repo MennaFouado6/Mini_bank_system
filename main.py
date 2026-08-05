@@ -1,9 +1,11 @@
 from account import Account_Manager
 from transactions import deposit, withdraw, transfer,check_balance
+from Auth_Reporting import Auth_Reporting
 
 
 def main():
     manager = Account_Manager()
+    auth = Auth_Reporting(manager)
 
     while True:
         print("\n**************Welcome to our bank**************")
@@ -15,7 +17,11 @@ def main():
         print("6. Withdraw")
         print("7. Transfer")
         print("8. Check Balance")
-        print("9. Exit")
+        print("9. Login")
+        print("10. Change PIN")
+        print("11. Transaction History")
+        print("12. List All Accounts")
+        print("13. Exit")
 
         choice = input("Choose an operation (1-9): ").strip()
 
@@ -84,12 +90,30 @@ def main():
             elif manager.verify_pin(account):
                 check_balance(account)
 
+
         elif choice == "9":
+            auth.login()                         
+
+ 
+        elif choice == "10":
+            auth.change_pin()                     
+
+ 
+        elif choice == "11":
+            account_number = int(input("Enter account number: "))
+            auth.transaction_history(account_number)  
+
+ 
+        elif choice == "12":
+            auth.list_all_accounts()              
+
+ 
+        elif choice == "13":
             print("Goodbye!")
             break
 
         else:
-            print("Invalide choice. Please choose a number from 1 to 9.")  
+            print("Invalide choice. Please choose a number from 1 to 13.")  
 
 
 if __name__ == "__main__":

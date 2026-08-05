@@ -1,8 +1,8 @@
 from account import Account_Manager #from shahd
 
 class Auth_Reporting:
-  def __init__(self, account_management):
-    account_management = Account_Manager()
+  
+  def __init__(self, account_management :Account_Manager):
     self.account_management = account_management
 
   def login(self):
@@ -38,13 +38,13 @@ class Auth_Reporting:
         return
 
       print("Please enter your old pin: ")
-      old_pin_auth = self.account_management.verify_pin(account_number)
+      old_pin_auth = self.account_management.verify_pin(account)
       if not old_pin_auth:
         return
 
       new_pin = None
       for attempts in range(3):
-        input_pin = int(input("Please enter your new pin: "))
+        input_pin = input("Please enter your new pin: ")
         if len(input_pin) == 4 and input_pin.isdigit():
           new_pin = input_pin
           break
@@ -76,10 +76,10 @@ class Auth_Reporting:
     for t in account.transactions:
       if t["type"] == "transfer":
         print(f"{t["amount"]} transfered to {t["to"]}, Sender balance now is: {t["balance_after"]}")
-      elif t["type"] == "recieved":
-        print(f"{t["amount"]} recieved from {t["from"]}, Receiver balance now is: {t["balance_after"]}")
+      elif t["type"] == "received":
+        print(f"{t["amount"]} received from {t["from"]}, Receiver balance now is: {t["balance_after"]}")
       else:
-        print(f"{t['type']} amount is: {t['amount']}, Balance now is: {t['balance_after']}") #deposit or withdraw
+        print(f"{t["type"]} amount is: {t["amount"]}, Balance now is: {t["balance_after"]}") #deposit or withdraw
    #end of transaction history
    
   def list_all_accounts(self):
