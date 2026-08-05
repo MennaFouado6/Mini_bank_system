@@ -2,7 +2,13 @@ from account import Account_Manager
 from transactions import deposit, withdraw, transfer,check_balance
 from Auth_Reporting import Auth_Reporting
 
-
+def get_int(prompt):
+    while True:
+        try:
+            return int(input(prompt))
+        except ValueError:
+            print("Invalid input. Please enter digits only.")
+            
 def main():
     manager = Account_Manager()
     auth = Auth_Reporting(manager)
@@ -23,7 +29,7 @@ def main():
         print("12. List All Accounts")
         print("13. Exit")
 
-        choice = input("Choose an operation (1-9): ").strip()
+        choice = input("Choose an operation (1-13): ").strip()
 
         if choice == "1":
             manager.create_account_interactive()
