@@ -15,7 +15,7 @@ def main():
     logged_in_account = None
 
     while True:
-        print("\n************** Welcome to our Bank **************")
+        print("\n************** Welcome to NOVA Bank **************")
         
         # --- PRE-LOGIN MENU ---
         if logged_in_account is None:
