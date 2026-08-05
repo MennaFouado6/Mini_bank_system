@@ -6,16 +6,31 @@ class Auth_Reporting:
     self.account_management = account_management
 
   def login(self):
-    account_number = int(input("Please Enter your account number: "))
-    account = self.account_management.get_account_by_account_number(account_number)
-    if account is None:
-      print("This account doesn't exist")
-      return None
-    if not self.account_management.verify_pin(account):
-      print("Access not granted!")
-      return None
-    print("Access granted")
-    return account
+    max_attempts = 3
+    attempts = 0
+    while attempts < max_attempts:
+     try:
+       account_number = int(input("Please Enter your account number: "))
+     except ValueError:
+      print(f"Invalid input. {max_attempts - (attempts +1 )} attempts left.")
+      attempts += 1
+      continue
+     
+     account = self.account_management.get_account_by_account_number(account_number)
+
+     if account is None:
+       print(f"This account doesn't exist, you have {max_attempts - (attempts +1 )} attempts left!")
+       attempts += 1
+       continue
+     
+     if self.account_management.verify_pin(account):
+       print("Access granted!")
+       return account
+     
+     print(f"Wrong PIN. {max_attempts - (attempts + 1)} attempts left")
+     attempts += 1
+    print("Too many failed attempts. Process failed!")
+    return None
 
 
   def change_pin(self):
