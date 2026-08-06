@@ -3,10 +3,9 @@ from tkinter import messagebox
 
 from account import Account_Manager
 
-# ---------------- الألوان ----------------
-AZURE_WHITE = "#F0FFFF"      # Azureish white
-SPACE_CADET = "#1D2951"      # Space cadet
-CADET_HOVER = "#2E4272"      # درجة أفتح شوية للـ hover
+AZURE_WHITE = "#F0FFFF"      
+SPACE_CADET = "#1D2951"      
+CADET_HOVER = "#2E4272"      
 
 
 class BankGUI:
@@ -22,7 +21,6 @@ class BankGUI:
 
         self.show_home()
 
-    # ---------------- أدوات مساعدة ----------------
     def clear(self):
         for w in self.root.winfo_children():
             w.destroy()
@@ -53,7 +51,7 @@ class BankGUI:
                        font=("Consolas", 11), bd=0,
                        highlightthickness=1, highlightbackground=SPACE_CADET)
 
-    # ---------------- القائمة الخارجية ----------------
+    
     def show_home(self):
         self.clear()
         self.logged_in_account = None
@@ -67,7 +65,7 @@ class BankGUI:
                           ("Exit", self.root.destroy)]:
             self.button(text, cmd).pack(fill="x", padx=70, pady=5)
 
-    # ---------------- إنشاء حساب ----------------
+    
     def show_create_account(self):
         self.clear()
         self.title_bar("Create New Account")
@@ -110,7 +108,7 @@ class BankGUI:
         self.button("Create Account", submit).pack(pady=20)
         self.button("Back", self.show_home).pack()
 
-    # ---------------- تسجيل الدخول (3 محاولات) ----------------
+    
     def show_login(self):
         self.clear()
         self.title_bar("Login")
@@ -154,7 +152,7 @@ class BankGUI:
         self.button("Login", submit).pack(pady=22)
         self.button("Back", self.show_home).pack()
 
-    # ---------------- القائمة الداخلية ----------------
+    
     def show_dashboard(self):
         self.clear()
         acc = self.logged_in_account
@@ -174,7 +172,7 @@ class BankGUI:
                           ("Logout", self.show_home)]:
             self.button(text, cmd).pack(fill="x", padx=70, pady=3)
 
-    # ---------------- شاشة إدخال مبلغ ----------------
+    
     def amount_screen(self, title, on_submit):
         self.clear()
         self.title_bar(title)
@@ -194,7 +192,7 @@ class BankGUI:
         self.button("Confirm", submit).pack(pady=22)
         self.button("Back", self.show_dashboard).pack()
 
-    # ---------------- إيداع ----------------
+    
     def do_deposit(self):
         def submit(amount):
             if amount <= 0:
@@ -209,7 +207,7 @@ class BankGUI:
             self.show_dashboard()
         self.amount_screen("Deposit", submit)
 
-    # ---------------- سحب ----------------
+    
     def do_withdraw(self):
         def submit(amount):
             acc = self.logged_in_account
@@ -227,7 +225,7 @@ class BankGUI:
             self.show_dashboard()
         self.amount_screen("Withdraw", submit)
 
-    # ---------------- تحويل ----------------
+    
     def show_transfer(self):
         self.clear()
         self.title_bar("Transfer")
@@ -283,7 +281,7 @@ class BankGUI:
         self.button("Transfer", submit).pack(pady=22)
         self.button("Back", self.show_dashboard).pack()
 
-    # ---------------- باقي العمليات ----------------
+    
     def do_check_balance(self):
         messagebox.showinfo("Balance", f"Balance: {self.logged_in_account.balance:.2f}")
 
