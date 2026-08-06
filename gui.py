@@ -2,10 +2,12 @@ import tkinter as tk
 from tkinter import messagebox
 
 from account import Account_Manager
+from transactions import deposit, withdraw, transfer, check_balance
+from Auth_Reporting import Auth_Reporting
 
-AZURE_WHITE = "#F0FFFF"      
-SPACE_CADET = "#1D2951"      
-CADET_HOVER = "#2E4272"      
+AZURE_WHITE = "#F0FFFF"
+SPACE_CADET = "#1D2951"
+CADET_HOVER = "#2E4272"
 
 
 class BankGUI:
@@ -17,6 +19,7 @@ class BankGUI:
         self.root.configure(bg=AZURE_WHITE)
 
         self.manager = Account_Manager()
+        self.auth = Auth_Reporting(self.manager)
         self.logged_in_account = None
 
         self.show_home()
@@ -51,7 +54,6 @@ class BankGUI:
                        font=("Consolas", 11), bd=0,
                        highlightthickness=1, highlightbackground=SPACE_CADET)
 
-    
     def show_home(self):
         self.clear()
         self.logged_in_account = None
@@ -61,11 +63,12 @@ class BankGUI:
 
         for text, cmd in [("Create New Account", self.show_create_account),
                           ("Login", self.show_login),
+                          ("View Account Details", self.show_view_details_lookup),
+                          ("Search by Name", self.show_search_by_name),
                           ("List All Accounts (Admin)", self.show_all_accounts),
                           ("Exit", self.root.destroy)]:
             self.button(text, cmd).pack(fill="x", padx=70, pady=5)
 
-    
     def show_create_account(self):
         self.clear()
         self.title_bar("Create New Account")
@@ -101,18 +104,21 @@ class BankGUI:
                 messagebox.showwarning("Invalid", "Balance cannot be negative.")
                 return
 
-            account = self.manager.create_account(name, pin, balance)
-            messagebox.showinfo("Success", f"Account created successfully!\nAccount number: {account.account_number}")
-            self.show_home()
+            try:
+                account = self.manager.create_account(name, pin, balance)
+                messagebox.showinfo("Success", f"Account created successfully!\nAccount number: {account.account_number}")
+                self.show_home()
+            except ValueError as e:
+                messagebox.showwarning("Invalid", str(e))
 
         self.button("Create Account", submit).pack(pady=20)
         self.button("Back", self.show_home).pack()
 
-    
     def show_login(self):
         self.clear()
         self.title_bar("Login")
         attempts = [0]
+        max_attempts = 3
 
         self.label("Account number:", 11, True).pack(anchor="w", padx=70, pady=(25, 3))
         acc_e = self.entry()
@@ -124,7 +130,7 @@ class BankGUI:
 
         def fail(msg):
             attempts[0] += 1
-            left = 3 - attempts[0]
+            left = max_attempts - attempts[0]
             if left <= 0:
                 messagebox.showerror("Login failed", "Too many failed attempts. Process failed!")
                 self.show_home()
@@ -152,7 +158,61 @@ class BankGUI:
         self.button("Login", submit).pack(pady=22)
         self.button("Back", self.show_home).pack()
 
-    
+    def show_view_details_lookup(self):
+        self.clear()
+        self.title_bar("View Account Details")
+
+        self.label("Account number:", 11, True).pack(anchor="w", padx=70, pady=(25, 3))
+        acc_e = self.entry()
+        acc_e.pack(fill="x", padx=70, ipady=4)
+
+        def submit():
+            acc_text = acc_e.get().strip()
+            if not acc_text.isdigit():
+                messagebox.showwarning("Invalid", "Account number must be digits only.")
+                return
+
+            account = self.manager.get_account_by_account_number(int(acc_text))
+            if account is None:
+                messagebox.showwarning("Not found", f"Account {acc_text} does not exist.")
+                return
+
+            messagebox.showinfo("Account Details",
+                                f"Account Number: {account.account_number}\n"
+                                f"Name: {account.name}\n"
+                                f"Balance: {account.balance:.2f}")
+
+        self.button("Search", submit).pack(pady=22)
+        self.button("Back", self.show_home).pack()
+
+    def show_search_by_name(self):
+        self.clear()
+        self.title_bar("Search by Name")
+
+        self.label("Name:", 11, True).pack(anchor="w", padx=70, pady=(25, 3))
+        name_e = self.entry()
+        name_e.pack(fill="x", padx=70, ipady=4)
+
+        def submit():
+            name = name_e.get().strip()
+            if not name:
+                messagebox.showwarning("Invalid", "Name cannot be empty.")
+                return
+
+            results = self.manager.search_account_by_name(name)
+            if not results:
+                messagebox.showinfo("No results", f"No accounts found with the name '{name}'.")
+                return
+
+            details = "\n\n".join(
+                f"Account Number: {a.account_number}\nName: {a.name}\nBalance: {a.balance:.2f}"
+                for a in results
+            )
+            messagebox.showinfo(f"Found {len(results)} account(s)", details)
+
+        self.button("Search", submit).pack(pady=22)
+        self.button("Back", self.show_home).pack()
+
     def show_dashboard(self):
         self.clear()
         acc = self.logged_in_account
@@ -172,7 +232,6 @@ class BankGUI:
                           ("Logout", self.show_home)]:
             self.button(text, cmd).pack(fill="x", padx=70, pady=3)
 
-    
     def amount_screen(self, title, on_submit):
         self.clear()
         self.title_bar(title)
@@ -192,40 +251,28 @@ class BankGUI:
         self.button("Confirm", submit).pack(pady=22)
         self.button("Back", self.show_dashboard).pack()
 
-    
     def do_deposit(self):
         def submit(amount):
-            if amount <= 0:
-                messagebox.showwarning("Invalid", "Invalid amount. Please try again.")
-                return
-            acc = self.logged_in_account
-            acc.balance += amount
-            acc.transactions.append({"type": "deposit", "amount": amount,
-                                     "balance_after": acc.balance})
-            self.manager.save_accounts()
-            messagebox.showinfo("Success", f"Deposit completed successfully!\nBalance: {acc.balance:.2f}")
-            self.show_dashboard()
+            try:
+                new_balance = deposit(self.logged_in_account, amount)
+                self.manager.save_accounts()
+                messagebox.showinfo("Success", f"Deposit completed successfully!\nBalance: {new_balance:.2f}")
+                self.show_dashboard()
+            except ValueError as e:
+                messagebox.showwarning("Invalid", str(e))
         self.amount_screen("Deposit", submit)
 
-    
     def do_withdraw(self):
         def submit(amount):
-            acc = self.logged_in_account
-            if amount <= 0:
-                messagebox.showwarning("Invalid", "Invalid amount. Please try again.")
-                return
-            if amount > acc.balance:
-                messagebox.showwarning("Invalid", "Insufficient funds.")
-                return
-            acc.balance -= amount
-            acc.transactions.append({"type": "withdrawal", "amount": amount,
-                                     "balance_after": acc.balance})
-            self.manager.save_accounts()
-            messagebox.showinfo("Success", f"Withdrawal completed successfully!\nBalance: {acc.balance:.2f}")
-            self.show_dashboard()
+            try:
+                new_balance = withdraw(self.logged_in_account, amount)
+                self.manager.save_accounts()
+                messagebox.showinfo("Success", f"Withdrawal completed successfully!\nBalance: {new_balance:.2f}")
+                self.show_dashboard()
+            except ValueError as e:
+                messagebox.showwarning("Invalid", str(e))
         self.amount_screen("Withdraw", submit)
 
-    
     def show_transfer(self):
         self.clear()
         self.title_bar("Transfer")
@@ -249,39 +296,22 @@ class BankGUI:
                 messagebox.showwarning("Invalid", "Please enter a valid amount.")
                 return
 
-            sender = self.logged_in_account
-            receiver_num = int(rec_text)
-
-            if receiver_num == sender.account_number:
-                messagebox.showwarning("Invalid", "Cannot transfer to your own account.")
-                return
-            receiver = self.manager.get_account_by_account_number(receiver_num)
+            receiver = self.manager.get_account_by_account_number(int(rec_text))
             if receiver is None:
-                messagebox.showwarning("Invalid", f"Account {receiver_num} does not exist.")
-                return
-            if amount <= 0:
-                messagebox.showwarning("Invalid", "Invalid amount. Please try again.")
-                return
-            if amount > sender.balance:
-                messagebox.showwarning("Invalid", "Insufficient funds.")
+                messagebox.showwarning("Invalid", f"Account {rec_text} does not exist.")
                 return
 
-            sender.balance -= amount
-            receiver.balance += amount
-            sender.transactions.append({"type": "transfer", "amount": amount,
-                                        "to": receiver.account_number,
-                                        "balance_after": sender.balance})
-            receiver.transactions.append({"type": "received", "amount": amount,
-                                          "from": sender.account_number,
-                                          "balance_after": receiver.balance})
-            self.manager.save_accounts()
-            messagebox.showinfo("Success", f"Transfer completed successfully!\nBalance: {sender.balance:.2f}")
-            self.show_dashboard()
+            try:
+                sender_balance, _ = transfer(self.logged_in_account, receiver, amount)
+                self.manager.save_accounts()
+                messagebox.showinfo("Success", f"Transfer completed successfully!\nBalance: {sender_balance:.2f}")
+                self.show_dashboard()
+            except ValueError as e:
+                messagebox.showwarning("Invalid", str(e))
 
         self.button("Transfer", submit).pack(pady=22)
         self.button("Back", self.show_dashboard).pack()
 
-    
     def do_check_balance(self):
         messagebox.showinfo("Balance", f"Balance: {self.logged_in_account.balance:.2f}")
 
@@ -296,28 +326,31 @@ class BankGUI:
         self.clear()
         self.title_bar("Change PIN")
         attempts = [0]
+        max_attempts = 3
 
-        self.label("New 4-digit PIN:", 11, True).pack(anchor="w", padx=70, pady=(25, 3))
-        pin_e = self.entry(secret=True)
-        pin_e.pack(fill="x", padx=70, ipady=4)
+        self.label("Old PIN:", 11, True).pack(anchor="w", padx=70, pady=(25, 3))
+        old_pin_e = self.entry(secret=True)
+        old_pin_e.pack(fill="x", padx=70, ipady=4)
+
+        self.label("New 4-digit PIN:", 11, True).pack(anchor="w", padx=70, pady=(12, 3))
+        new_pin_e = self.entry(secret=True)
+        new_pin_e.pack(fill="x", padx=70, ipady=4)
 
         def submit():
-            new_pin = pin_e.get().strip()
-            if len(new_pin) == 4 and new_pin.isdigit():
-                self.logged_in_account.pin = new_pin
-                self.manager.save_accounts()
+            old_pin = old_pin_e.get().strip()
+            new_pin = new_pin_e.get().strip()
+            try:
+                self.auth.change_pin_core(self.logged_in_account, old_pin, new_pin)
                 messagebox.showinfo("Success", "PIN successfully changed!")
                 self.show_dashboard()
-                return
-
-            attempts[0] += 1
-            left = 3 - attempts[0]
-            if left <= 0:
-                messagebox.showerror("Failed", "Failed after 3 tries. Operation cancelled.")
-                self.show_dashboard()
-            else:
-                messagebox.showwarning("Invalid",
-                                       f"PIN must be 4 digits only!\nYou have {left} attempts left.")
+            except ValueError as e:
+                attempts[0] += 1
+                left = max_attempts - attempts[0]
+                if left <= 0:
+                    messagebox.showerror("Failed", "Too many failed attempts. Operation cancelled.")
+                    self.show_dashboard()
+                else:
+                    messagebox.showwarning("Invalid", f"{e}\nYou have {left} attempts left.")
 
         self.button("Change PIN", submit).pack(pady=22)
         self.button("Back", self.show_dashboard).pack()
