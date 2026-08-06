@@ -36,7 +36,7 @@ class Auth_Reporting:
     def change_pin(self, logged_in_account=None):
         print("-----Change PIN-----")
         
-        # If user is already logged in, skip account/PIN verification
+        # If user is already logged in, skip account verification
         if logged_in_account:
             account = logged_in_account
             print(f"Changing PIN for account {account.account_number}")
@@ -59,10 +59,10 @@ class Auth_Reporting:
                 print(f"Account {account_number} doesn't exist")
                 return
 
-            print("Please enter your old PIN: ")
-            if not self.account_management.verify_pin(account):
-                print("Old PIN verification failed.")
-                return
+        print("Please enter your old PIN: ")
+        if not self.account_management.verify_pin(account):
+            print("Old PIN verification failed.")
+            return
 
         #
         new_pin = None
