@@ -2,8 +2,8 @@
   {
     "account_number": 1001,
     "name": "Shahd",
-    "pin": "2007",
-    "balance": 50700.0,
+    "pin": "2006",
+    "balance": 51000.0,
     "transactions": [
       {
         "type": "deposit",
@@ -15,6 +15,27 @@
         "amount": 200.0,
         "from": 1002,
         "balance_after": 50700.0
+      },
+      {
+        "type": "deposit",
+        "amount": 300.0,
+        "balance_after": 51000.0
+      },
+      {
+        "type": "withdrawal",
+        "amount": 100.0,
+        "balance_after": 50900.0
+      },
+      {
+        "type": "transfer",
+        "amount": 200.0,
+        "to": 1002,
+        "balance_after": 50700.0
+      },
+      {
+        "type": "deposit",
+        "amount": 300.0,
+        "balance_after": 51000.0
       }
     ]
   },
@@ -22,7 +43,7 @@
     "account_number": 1002,
     "name": "menna",
     "pin": "1236",
-    "balance": 19300.0,
+    "balance": 19500.0,
     "transactions": [
       {
         "type": "deposit",
@@ -49,6 +70,12 @@
         "amount": 200.0,
         "to": 1001,
         "balance_after": 19300.0
+      },
+      {
+        "type": "received",
+        "amount": 200.0,
+        "from": 1001,
+        "balance_after": 19500.0
       }
     ]
   }

@@ -1,7 +1,6 @@
 import json
 import os
 
-#Account
 class Account:
   def __init__(self,account_number,name,pin,balance = 0):
     self.account_number = account_number
@@ -13,7 +12,6 @@ class Account:
   def __repr__(self):
     return f"Account ({self.account_number}, {self.name}, Balance: {self.balance})"
   
-  #nhwel el acc fe dictionary aashan neaarf n7fzo fel malaf
   def to_dict(self):
     return{
         "account_number": self.account_number,
@@ -23,7 +21,6 @@ class Account:
         "transactions" : self.transactions,
     }
   
-  #nrg3 el hesab mn el dictionary
   @classmethod
   def from_dict(cls,data):
     account = cls(
@@ -35,7 +32,6 @@ class Account:
     account.transactions = data.get("transactions" ,[])
     return account
 
-#Account Manager
 class Account_Manager:
   def __init__(self,filename = "accounts.json"):
     self.filename = filename
@@ -43,7 +39,6 @@ class Account_Manager:
     self.next_account_number = 1001
     self.load_accounts()
 
-  #when it opens and read the accounts in the files
   def load_accounts(self):
     if not os.path.exists(self.filename):
       return
@@ -70,7 +65,6 @@ class Account_Manager:
       print(f"Warning: Could not save accounts. ({e})")
 
 
-  #Account input from the user
   def create_account_interactive(self):
     print("-----Create New Account-----")
     while True:
@@ -109,7 +103,6 @@ class Account_Manager:
       print(f"Could not create account: {e}")
       return None
 
-  #Making sure everything is correct
   def create_account(self,name,pin,initial_balance = 0):
     if not name or not name.strip():
       raise ValueError("Name cannot be empty")
@@ -135,7 +128,6 @@ class Account_Manager:
     return self.accounts.get(account_number)
 
 
-  #Delete the account
   def delete_account(self,account_number):
     if account_number not in self.accounts:
       raise ValueError(f"Account {account_number} does not exist")
@@ -144,7 +136,6 @@ class Account_Manager:
     self.save_accounts()
     print(f"Account {account_number} has been deleted successfully")
 
-  #verify pin only 3 times
   def verify_pin(self,account):
     print(f"Enter PIN for account {account.account_number}")
 
@@ -160,7 +151,6 @@ class Account_Manager:
     print("Wrong PIN 3 times. Operation cancelled")
     return False
 
-  #When the user put an account that doesn't exist
   def delete_account_interactive(self):
     print("-----Delete Account-----")
     while True:
@@ -194,7 +184,6 @@ class Account_Manager:
         print("----Please try again----")
 
 
-  #enter your account number to know your details
   def view_account_details_interactive(self):
     print("-----Search by Account Number-----")
     while True:
@@ -228,7 +217,6 @@ class Account_Manager:
         print(e)
         print("----Please try again----")
 
-  #View the account details
   def view_account_details(self,account_number):
     account = self.get_account_by_account_number(account_number)
     if account is None:
@@ -240,7 +228,6 @@ class Account_Manager:
     print(f"Balance: {account.balance}")
     print("-------------------------")
 
-  #Search the account by name
   def search_account_by_name(self,name):
     results = []
     for account in self.accounts.values():
@@ -248,7 +235,6 @@ class Account_Manager:
         results.append(account)
     return results
 
-  #SEARCH ACCOUNT INERACTIVE
   def search_account_by_name_interactive(self):
     print("-----Search by Name-----")
     name = input("Enter the name to search (or type 'exit' to cancel): ")

@@ -1,4 +1,3 @@
-#Deposit money into an account (core logic - no input)
 def deposit(account, amount):
     if amount <= 0:
         raise ValueError("Invalid amount. Please try again.")
@@ -22,7 +21,6 @@ def deposit_interactive(account):
     return new_balance
 
 
-#Withdraw money from an account (core logic - no input)
 def withdraw(account, amount):
     if amount <= 0:
         raise ValueError("Invalid amount. Please try again.")
@@ -48,7 +46,6 @@ def withdraw_interactive(account):
     return new_balance
 
 
-#Transfer money between two accounts (core logic - no input)
 def transfer(sender_account, receiver_account, amount):
     if amount <= 0:
         raise ValueError("Invalid amount. Please try again")
