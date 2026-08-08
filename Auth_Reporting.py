@@ -35,11 +35,7 @@ class Auth_Reporting:
         return None
 
     def change_pin_core(self, account, old_pin, new_pin):
-        """
-        Core logic - no input().
-        Always verifies the old PIN before changing it, in every case
-        (CLI and GUI both must go through this check).
-        """
+
         if old_pin != account.pin:
             raise ValueError("Old PIN is incorrect")
 
