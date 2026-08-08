@@ -3,7 +3,7 @@
     "account_number": 1001,
     "name": "Shahd",
     "pin": "2007",
-    "balance": 46500.0,
+    "balance": 47500.0,
     "transactions": [
       {
         "type": "deposit",
@@ -48,6 +48,12 @@
         "amount": 500.0,
         "from": 1003,
         "balance_after": 46500.0
+      },
+      {
+        "type": "received",
+        "amount": 1000.0,
+        "from": 1004,
+        "balance_after": 47500.0
       }
     ]
   },
@@ -55,7 +61,7 @@
     "account_number": 1002,
     "name": "menna",
     "pin": "1236",
-    "balance": 24500.0,
+    "balance": 344500.0,
     "transactions": [
       {
         "type": "deposit",
@@ -94,6 +100,29 @@
         "amount": 5000.0,
         "from": 1001,
         "balance_after": 24500.0
+      },
+      {
+        "type": "received",
+        "amount": 50000.0,
+        "from": 1004,
+        "balance_after": 74500.0
+      },
+      {
+        "type": "received",
+        "amount": 100000.0,
+        "from": 1004,
+        "balance_after": 174500.0
+      },
+      {
+        "type": "received",
+        "amount": 100000.0,
+        "from": 1004,
+        "balance_after": 274500.0
+      },
+      {
+        "type": "deposit",
+        "amount": 70000.0,
+        "balance_after": 344500.0
       }
     ]
   },
@@ -118,6 +147,91 @@
         "amount": 500.0,
         "to": 1001,
         "balance_after": 9200.0
+      }
+    ]
+  },
+  {
+    "account_number": 1004,
+    "name": "hagar",
+    "pin": "9009",
+    "balance": 9899000.0,
+    "transactions": [
+      {
+        "type": "transfer",
+        "amount": 50000.0,
+        "to": 1002,
+        "balance_after": 1150000.0
+      },
+      {
+        "type": "withdrawal",
+        "amount": 50000.0,
+        "balance_after": 1100000.0
+      },
+      {
+        "type": "deposit",
+        "amount": 900000.0,
+        "balance_after": 2000000.0
+      },
+      {
+        "type": "transfer",
+        "amount": 100000.0,
+        "to": 1002,
+        "balance_after": 1900000.0
+      },
+      {
+        "type": "deposit",
+        "amount": 500000.0,
+        "balance_after": 2400000.0
+      },
+      {
+        "type": "deposit",
+        "amount": 600000.0,
+        "balance_after": 3000000.0
+      },
+      {
+        "type": "deposit",
+        "amount": 7000000.0,
+        "balance_after": 10000000.0
+      },
+      {
+        "type": "transfer",
+        "amount": 1000.0,
+        "to": 1001,
+        "balance_after": 9999000.0
+      },
+      {
+        "type": "transfer",
+        "amount": 100000.0,
+        "to": 1002,
+        "balance_after": 9899000.0
+      }
+    ]
+  },
+  {
+    "account_number": 1005,
+    "name": "Mira",
+    "pin": "1975",
+    "balance": 1900000.0,
+    "transactions": [
+      {
+        "type": "deposit",
+        "amount": 999.0,
+        "balance_after": 1000.0
+      },
+      {
+        "type": "deposit",
+        "amount": 800000.0,
+        "balance_after": 801000.0
+      },
+      {
+        "type": "deposit",
+        "amount": 99000.0,
+        "balance_after": 900000.0
+      },
+      {
+        "type": "deposit",
+        "amount": 1000000.0,
+        "balance_after": 1900000.0
       }
     ]
   }
